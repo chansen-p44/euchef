@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  EU Chef
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 120
+    Environment:
+      Variables:
+        DynamoEndPoint: "https://dynamodb.eu-west-1.amazonaws.com" 
+        DynamoTableName: "euchef_Status"   
+        SlackAPIKey: ""
+        SlackChannelID: ""
+
+Resources:
+  PostLambda:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ../bin/
+      Handler: post_lambda
+      Runtime: go1.x
+      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      MemorySize: 128 
+      Timeout: 120
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AmazonDynamoDBFullAccess
+      Events:
+        CatchAll:
+          Type: Schedule 
+          Properties:
+            Schedule: cron(0 6 * * ? *)
+  DeleteLambda:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ../bin/
+      Handler: delete_lambda
+      Runtime: go1.x
+      Tracing: Active # https://docs.aws.amazon.com/lambda/latest/dg/lambda-x-ray.html
+      MemorySize: 128 
+      Timeout: 120
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AmazonDynamoDBFullAccess
+      Events:
+        CatchAll:
+          Type: Schedule 
+          Properties:
+            Schedule: cron(0 13 * * ? *)
