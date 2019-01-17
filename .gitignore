@@ -1,3 +1,4 @@
 /bin
 /src/post_lambda/debug.test
 /src/delete_lambda/debug.test
+/build/packaged.yaml
