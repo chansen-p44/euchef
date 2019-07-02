@@ -27,7 +27,7 @@ func ParseData(data []byte) ([]MenuItem, error) {
 	log.Println("Parsing")
 
 	// Find the menus
-	sel := doc.Find(".product")
+	sel := doc.Find(".product.menu")
 
 	menuItems := []MenuItem{}
 
@@ -56,7 +56,7 @@ func ParseData(data []byte) ([]MenuItem, error) {
 						text := pNode.Text()
 
 						// Skip the silly "Maks 5 kuverter pr. person:-)" line
-						if strings.Contains(text, "kuvert") && strings.Contains(text, "person") {
+						if strings.Contains(text, "kuve") && strings.Contains(text, "per") {
 							continue
 						}
 
@@ -98,6 +98,9 @@ func ParseData(data []byte) ([]MenuItem, error) {
 			log.Println(`menu.Find(".productPhotoLink") is nil`)
 		}
 		menuItems = append(menuItems, menuItem)
+
+		// Only take the first menu
+		break
 	}
 
 	log.Println("Parsing done")
