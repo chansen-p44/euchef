@@ -100,7 +100,7 @@ func ParseData(data []byte) ([]MenuItem, error) {
 		menuItems = append(menuItems, menuItem)
 
 		// Only take the first menu
-		break
+		//break
 	}
 
 	log.Println("Parsing done")

@@ -29,15 +29,15 @@ func FetchData(when time.Time) ([]byte, error) {
 
 	log.Println("Requesting data for date:", formData[5])
 
-	req, err := http.NewRequest("POST", "https://www.wipaway.dk/5137", postData)
+	req, err := http.NewRequest("POST", "https://www.shop.fazerfoodco.dk/5137", postData)
 	if err != nil {
 		log.Println("NewRequest error: ", err)
 		return nil, err
 	}
 
 	req.Header.Add("content-type", `application/x-www-form-urlencoded; charset=UTF-8`)
-	req.Header.Add("origin", `https://www.wipaway.dk`)
-	req.Header.Add("referer", ` https://www.wipaway.dk/5137`)
+	req.Header.Add("origin", `https://www.shop.fazerfoodco.dk.dk`)
+	req.Header.Add("referer", ` https://www.shop.fazerfoodco.dk/5137`)
 
 	client := &http.Client{Timeout: time.Second * 5}
 	res, err := client.Do(req)
@@ -59,7 +59,7 @@ func FetchData(when time.Time) ([]byte, error) {
 
 	log.Printf("Downloaded %d bytes", len(buf))
 
-	//ioutil.WriteFile("menu_data.html", buf, 0644)
+	ioutil.WriteFile("menu_data.html", buf, 0644)
 
 	return buf, nil
 }
