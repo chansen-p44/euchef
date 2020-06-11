@@ -8,7 +8,7 @@ import (
 func TestFetch(t *testing.T) {
 
 	format := "02-01-2006"
-	now, _ := time.Parse(format, "29-08-2019")
+	now, _ := time.Parse(format, "11-06-2020")
 
 	data, _ := FetchData(now)
 
