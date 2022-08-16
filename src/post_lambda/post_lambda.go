@@ -4,14 +4,15 @@ import (
 	"log"
 	"os"
 	"time"
-	"github.com/chansen-p44/euchef/src"
+
 	"github.com/aws/aws-lambda-go/lambda"
+	euchef "github.com/chansen-p44/euchef/src"
 )
 
 func post(now time.Time, storage *euchef.DynamoStorage) error {
 
 	// Fetch data
-	data, err := euchef.FetchData(now)
+	data, err := euchef.FetchData()
 	if err != nil {
 		log.Println("fetchData error:", err)
 		return err
@@ -48,7 +49,7 @@ func post(now time.Time, storage *euchef.DynamoStorage) error {
 	}
 
 	log.Println("All done")
-	
+
 	return nil
 }
 

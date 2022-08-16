@@ -2,8 +2,10 @@ package euchef
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -27,9 +29,14 @@ func ParseData(data []byte) ([]MenuItem, error) {
 	log.Println("Parsing")
 
 	// Find the menus
-	sel := doc.Find(".product.menu")
-
+	sel := doc.Find(".category-products")
+	sel = sel.First()
+	sel = sel.Find(".w-saledate")
 	menuItems := []MenuItem{}
+
+	now := time.Now()
+	currentDateString := Format(now)
+	log.Println("Current date:", currentDateString)
 
 	for i := range sel.Nodes {
 		log.Printf("Menu %d", i+1)
@@ -37,44 +44,34 @@ func ParseData(data []byte) ([]MenuItem, error) {
 
 		menu := sel.Eq(i)
 
-		date := menu.Find("h4 span")
+		// Find the date this is valid
+		date := menu.Find(".salgstid")
 		if date != nil {
 			dateText := date.Text()
+			dateText = strings.TrimSpace(dateText)
 			log.Println("Menu date:", dateText)
+
+			if currentDateString != dateText {
+				log.Println("Menu date doesn't match current date, skipping")
+				continue
+			}
+
 			menuItem.Date = dateText
 		}
 
 		// Find the menu description text
-		productDetails := menu.Find(".productDetails")
+		productDetails := menu.Find(".desc")
 		if productDetails != nil {
-			productDetailsItem := productDetails.First()
-			if productDetailsItem != nil {
-				paragraph := productDetailsItem.Find("p")
-				if paragraph != nil {
-					for i := range paragraph.Nodes {
-						pNode := paragraph.Eq(i)
-						text := pNode.Text()
-
-						// Skip the silly "Maks 5 kuverter pr. person:-)" line
-						if strings.Contains(text, "kuve") && strings.Contains(text, "per") {
-							continue
-						}
-
-						menuItem.Title = append(menuItem.Title, text)
-						log.Println("Found menu title:", text)
-					}
-				} else {
-					log.Println("productDetailsItem.Find(\"p\") is nil")
-				}
-			} else {
-				log.Println("productDetailsItem.First() is nil")
-			}
+			text := productDetails.Text()
+			text = strings.TrimSpace(text)
+			text = strings.ReplaceAll(text, "\n", "")
+			log.Println("Found menu title:", text)
 		} else {
 			log.Println("menu.Find(\".productDetails\") is nil")
 		}
 
 		// Find the menu picture link
-		productPhotoLink := menu.Find(".productPhotoLink")
+		productPhotoLink := menu.Find(".product-image")
 		if productPhotoLink != nil {
 			link := productPhotoLink.First()
 			if link != nil {
@@ -107,4 +104,18 @@ func ParseData(data []byte) ([]MenuItem, error) {
 
 	return menuItems, nil
 
+}
+
+func Format(t time.Time) string {
+	return fmt.Sprintf("%s %02d. %s",
+		days[t.Weekday()], t.Day(), months[t.Month()-1],
+	)
+}
+
+var days = [...]string{
+	"søndag", "mandag", "tirsdag", "onsdag", "torsdag", "fredag", "lørdag"}
+
+var months = [...]string{
+	"januar", "feburar", "marts", "april", "maj", "juni",
+	"juli", "august", "september", "oktober", "november", "december",
 }
