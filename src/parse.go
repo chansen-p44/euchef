@@ -66,7 +66,7 @@ func ParseData(data []byte) ([]MenuItem, error) {
 			text = strings.TrimSpace(text)
 			text = strings.ReplaceAll(text, "\n", "")
 			log.Println("Found menu title:", text)
-			menuItem.Title = text
+			menuItem.Title = append(menuItem.Title, text)
 		} else {
 			log.Println("menu.Find(\".productDetails\") is nil")
 		}
