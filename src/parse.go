@@ -108,7 +108,7 @@ func ParseData(data []byte) ([]MenuItem, error) {
 }
 
 func Format(t time.Time) string {
-	return fmt.Sprintf("%s %02d. %s",
+	return fmt.Sprintf("%s %2d. %s",
 		days[t.Weekday()], t.Day(), months[t.Month()-1],
 	)
 }
